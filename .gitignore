@@ -1,0 +1,93 @@
+#include <Keypad.h>
+
+int msensor1=12;   //Set the digital 13 to PIR
+int ledred=11; //Set the digital 11 to LED
+int sound = 10; //Set the digital 10
+
+char password_on[] = {'1','2','3','4','A'}; //Koden för att aktivera larmet
+char password_off[] = {'1','2','3','4','D'}; //Koden för att inaktivera larmet
+char keypressed[5];
+
+
+int kodsiffra = 0; //Talar om vilken plats i password-arrayerna vi befinner oss på
+void setup() {
+  pinMode(ledred,OUTPUT);     //initialize the  led pin as output 
+  pinMode(msensor1,INPUT); //initialize the  PIR pin as input
+  pinMode(sound,OUTPUT);
+  Serial.begin(9600);
+
+}
+
+
+
+
+/* --------------- KOD FÖR ATT INITIERA KEYPAD ----------------------*/
+
+const byte ROWS = 4; //four rows
+const byte COLS = 4; //four columns
+//define the cymbols on the buttons of the keypads
+char hexaKeys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+
+byte rowPins[ROWS] = {9, 8, 7, 6}; //connect to the row pinouts of the keypad
+byte colPins[COLS] = {5, 4, 3, 2}; //connect to the column pinouts of the keypad
+Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
+/* ____________________________________________________________*/
+
+
+
+/* Vår sensor är aktiv */
+void alarm_on()
+{
+  if(msensor1 == HIGH){
+//Serial.println("ALARM PÅ");
+digitalWrite(ledred , HIGH);
+//digitalWrite(sound, HIGH);
+//TODO Vi ska lägga till kod för  att slå på alarmet
+  }
+}
+
+
+
+
+
+/* Vår sensor är inaktiv */
+void alarm_off()
+{
+Serial.println("ALARM AV");
+
+//TODO kod för att stänga av larmet
+  
+}
+
+
+// void siren
+
+
+
+
+
+void loop() {
+
+char customKey = customKeypad.getKey();
+
+  if (customKey) //Om något är inläst
+  {
+      keypressed[kodsiffra] = customKey;
+      kodsiffra++;
+      if (kodsiffra >= 5)
+      {
+        bool kod_on_ok = true;
+
+        //Kollar siffra för siffra och ser om den överensstämmer med vår kod för aktivering
+        for (int i = 0; i<5;i++)
+        {
+          //Serial.println(keypressed[i]);
+          if (keypressed[i] != password_on[i])
+          kod_on_ok = false;
+        }
+        //--------------------------------------------------------------
